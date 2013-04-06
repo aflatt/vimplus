@@ -24,30 +24,65 @@ def input(message):
 	text = vim.eval("inputText")
 	return text
 
-def inputPassword(message):
+def inputSecret(message):
 	"""Prompt the user for hidden input. Supplies the message as a prompt
 		returns the input from the user"""
 	vim.command("let inputText = inputsecret('{0}')".format(message))
 	text = vim.eval("inputText")
 	return text
 
-def splitWindowLeft(size, fileName):
-	vim.command("aboveleft {0}vsplit {1}".format(size, fileName))
-	vim.command("normal gg")
-
-def splitWindodwRight(size, fileName):
-	vim.command("botright {0}vsplit {1}".format(size, fileName))
-	vim.command("normal gg")
-
-def splitWindowBottom(size, fileName):
-	vim.command("belowright {0}split {1}".format(size, fileName))
-	vim.command("normal gg")
-
-def splitWindowTop(size, fileName):
-	vim.command("{0}split {1}".format(size, fileName))
-	vim.command("normal gg")
-
-def getTempFile(fileName=None):
+def splitWindowLeft(size, fileName=None):
+	"""Split the vim window vertically with the new window appearing on the west
+	of the screen
+		size is the horizontal screen size the window should take
+		fileName is an optional name of a file to open in the new window
+		returns the newly created buffer"""
 	if fileName is None:
-		pass
-	return vim.eval("$TEMP") + "/" + fileName
+		vim.command("aboveleft {0}vsplit {1}".format(size, fileName))
+	else:
+		vim.command("aboveleft {0}vnew".format(size))
+	gotoStart()
+	return vim.current.buffer
+
+def splitWindodwRight(size, fileName=None):
+	"""Split the vim window vertically with the new window appearing on the east
+	of the screen
+		size is the horizontal screen size the window should take
+		fileName is an optional name of a file to open in the new window
+		returns the newly created buffer"""
+	if fileName is None:
+		vim.command("botright {0}vsplit {1}".format(size, fileName))
+	else:
+		vim.command("botright {0}vnew".format(size))
+	gotoStart()
+	return vim.current.buffer
+
+def splitWindowBottom(size, fileName=None):
+	"""Split the vim window horizontally with the new window appearing on the south
+	of the screen
+		size is the vertical screen size (in lines) that the window should use
+		fileName is an optional name of a file to open in the new window
+		returns the newly created buffer"""
+	if fileName is None:
+		vim.command("belowright {0}split {1}".format(size, fileName))
+	else:
+		vim.command("belowright {0}new".format(size))
+	gotoStart()
+	return vim.current.buffer
+
+def splitWindowTop(size, fileName=None):
+	"""Split the vim window horizontally with the new window appearing on the north
+	of the screen
+		size is the vertical screen size (in lines) that the window should use
+		fileName is an optional name of a file to open in the new window
+		returns the newly created buffer"""
+	if fileName is None:
+		vim.command("{0}split {1}".format(size, fileName))
+	else:
+		vim.command("belowright {0}new".format(size))
+	gotoStart()
+	return vim.current.buffer
+
+def gotoStart():
+	"""Moves the cursor to the start of the current buffer"""
+	vim.command("normal gg")
