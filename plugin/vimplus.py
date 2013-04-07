@@ -83,6 +83,40 @@ def splitWindowTop(size, fileName=None):
 	gotoStart()
 	return vim.current.buffer
 
+def setBufferTypeScratch():
+	"""Make the current buffer a scratch buffer (i.e. where a temporary buffer that can be discarded)
+	at any time"""
+	vim.command("setlocal buftype=nofile")
+	vim.command("setlocal bufhidden=hide")
+	vim.command("setlocal noswapfile")
+
 def gotoStart():
 	"""Moves the cursor to the start of the current buffer"""
 	vim.command("normal gg")
+
+def setupCompletion(onKeys, completionMethod):
+	"""The vimplus complete method, which display a list of available autocompletions
+	can only be called from insert mode. This method sets up the appropriate key bindings
+	that will trigger calling the method
+		onKeys - the keys that will trigger the method
+		completionMethod - the completion method to call"""
+	pass
+
+def complete(words):
+	"""Shows the vim autocompletion menu"""
+	vim.command("call complete(col('.'), {0})".format(words))
+
+def onEvent(event, action):
+	"""Registers a call back that will be invoked when a vim event occurs
+		event is the name of the vim event to register (use event<name> members of vimplus)
+		action is the python method to call when the event occurs"""
+	pyMethodName = action.__name__
+	vimFuncName = pyMethodName
+	vimFuncName = pyMethodName[0].upper() + pyMethodName[1:]
+	vim.command("autocmd {event} * call {functionName}()".format(event=event, functionName=vimFuncName))	
+	vim.command("""fun! {functionName}()
+py {pyMethodName}()
+endf""".format(functionName=vimFuncName, pyMethodName=pyMethodName))
+
+eventBuferWrite = "BuferWrite"
+eventCursorMoved = "CursorMoved"
